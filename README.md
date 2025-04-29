@@ -24,7 +24,7 @@ An interactive map showcasing Ruth Asawa's public art installations in San Franc
 
 ## Deployment
 
-This project is deployed using GitHub Pages. Visit the live site at: [https://YOUR_USERNAME.github.io/asawa-map](https://YOUR_USERNAME.github.io/asawa-map)
+This project is deployed using GitHub Pages. Visit the live site at: [https://danzhechen.github.io/asawa-map/](https://danzhechen.github.io/asawa-map/)
 
 ## License
 
