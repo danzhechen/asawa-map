@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruth Asawa's Art Journey</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f5f2;
+            color: #2c3e50;
+            overflow: hidden;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            filter: sepia(20%) brightness(95%);
+        }
+        .info {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 300px;
+            font-family: 'Roboto', sans-serif;
+        }
+        .info h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+            font-family: 'Playfair Display', serif;
+        }
+        .info h4 a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .info h4 a:hover {
+            color: #e74c3c;
+        }
+        .info img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .info p {
+            margin: 8px 0;
+            line-height: 1.5;
+            color: #34495e;
+        }
+        .info .year {
+            font-weight: 500;
+            color: #e74c3c;
+        }
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .zoom-controls button {
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            border: none;
+            background: #2c3e50;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        .zoom-controls button:hover {
+            background: #e74c3c;
+            transform: scale(1.05);
+        }
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 300px;
+            backdrop-filter: blur(5px);
+        }
+        .title h1 {
+            margin: 0;
+            font-size: 2em;
+            color: #2c3e50;
+            font-family: 'Playfair Display', serif;
+            line-height: 1.2;
+            text-align: center;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        .title p {
+            margin: 10px 0 0;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-align: center;
+            font-style: italic;
+        }
+        .action-buttons {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .action-button {
+            padding: 12px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
+            min-width: 200px;
+            text-align: center;
+        }
+        .action-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.4);
+        }
+        .action-button.share {
+            background: #3498db;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+        }
+        .action-button.share:hover {
+            background: #2980b9;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="title">
+        <h1>Ruth Asawa's<br>Art Journey</h1>
+        <p>Discover the public art of San Francisco</p>
+    </div>
+    <div class="zoom-controls">
+        <button id="zoom-in">+</button>
+        <button id="zoom-out">-</button>
+    </div>
+    <div class="action-buttons">
+        <button class="action-button" id="open-google-maps">Add to Google Maps</button>
+        <button class="action-button share" id="share-button">Share Map</button>
+    </div>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
